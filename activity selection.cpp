@@ -11,13 +11,39 @@ vector<pair<int, int>> activityselection(vector<int> s, vector<int> e, int n);
 bool sortbysec(const pair<int, int> a, const pair<int, int> b){return a.second <= b.second;}
 bool sortdesc(const pair<int, int> a, const pair<int, int>b){return a.first >= b. first;}
 int main(){
-    int n = 11;
-    vector<int> s {1,3,0,5,3,5,6,8,8,9,12};
-    vector<int> e {4,5,6,7,8,9,10,11,12,13,14};
-    vector<pair<int, int>> ans = activityselection(s, e, n);
-    for (int i = 0; i < ans.size(); i ++){
-        cout << ans[i].first << " @ " << ans[i].second << endl;
+    int N;
+    cin >> N;
+    vector<int> s(N);
+    vector<int> e(N);
+    for (int i = 0; i < N; i ++){
+        cin >> s[i];
+
     }
+    for (int i = 0; i < N; i ++){
+        cin >> e[i];
+    }
+    vector<pair<int, int>> ans = activityselection(s, e, N);
+    cout << endl;
+    cout << ans.size() << endl;
+    vector<int>::iterator it;
+    int pos;
+    vector<int> output;
+    for (int i = 0; i < ans.size(); i ++){
+        it = find(s.begin(), s.end(), ans[i].first);
+        pos = distance(s.begin(), it)+1;
+        output.push_back(pos);
+    }
+
+    cout << "(";
+    sort(output.begin(), output.end());
+    for (int i = 0; i < output.size()-1; i ++){
+        cout << output.at(i) << ",";
+    }
+    cout << output.at(output.size()-1);
+    cout << ")";
+
+
+
 }
 
 vector<pair<int, int>> activityselection(vector<int> s, vector<int> e, int n){
