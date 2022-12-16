@@ -31,12 +31,10 @@ pair<int, vector<int>> knapsack(int W, int N, int* weight, int* value){
         isselect[i] = new int [W+1];
     }
     for (int i = 0; i <= N; i ++){
-        arr[i][0] = 0;
-        isselect[i][0] = 0;
-    }
-    for (int i = 0; i <= W; i++){
-        arr[0][i] = 0;
-        isselect[0][i] = 0;
+        for (int j = 0; j <= W; j ++){
+            arr[i][j] = 0;
+            isselect[i][j] = 0;
+        }
     }
     for (int i = 1; i <= N; i ++){
         for (int j = 1; j <= W; j ++){
