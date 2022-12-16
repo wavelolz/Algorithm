@@ -1,73 +1,52 @@
 #include <iostream>
-#include <vector>
-#include <limits>
+#include <climits>
+#include <math.h>
 using namespace std;
 
-int max(int a, int b){return (a >= b) ? a : b;}
-vector<vector<int > > rodcut(vector<int> price, int n);
+int** rodcut(int* arr, int N);
 int main(){
-
-    int N;
+    int N, current_len, c = 0;
     cin >> N;
-    int arr[N];
+    int arr[N], cutway[N];
     for (int i = 0; i < N; i ++){
         cin >> arr[i];
     }
-    vector<int> price(N);
-    for (int i = 0; i < N; i ++){
-        price[i] = arr[i];
+    int** result;
+    result = rodcut(arr, N);
+    current_len = N;
+    while (current_len > 0){
+        cutway[c] = result[1][current_len-1];
+        current_len -= result[1][current_len-1];
+        c += 1;
     }
-    vector<vector<int> > a = rodcut(price, N);
-
-
-    vector<int> cutway;
-    cutway.reserve(N);
-    int curr_len = N;
-    int countc = 0;
-    while (curr_len >= 1){
-        int cutpoint = a.at(1).at(curr_len-1);
-        curr_len -= cutpoint;
-        cutway[countc] = cutpoint;
-        countc ++;
-    }
-    cout << a[0][N] << endl;
-    cout << countc << endl;
-    cout << N << " = ";
-    for (int i = 0; i < countc-1; i ++){
+    cout << result[0][N-1] << endl;
+    cout << c << endl;
+    cout << N << "=";
+    for (int i = 0; i < c-1; i ++){
         cout << cutway[i] << "+";
     }
-    cout << cutway[countc-1];
-
+    cout << cutway[c-1];
 }
 
-
-vector<vector<int> > rodcut(vector<int> price, int n){
-    price.insert(price.begin(), 0); // 先在 price 加上長度為 0 的情況
-    vector<vector<int> > result;
-    result.resize(2, vector<int>(n+1)); // 第一個 row 存價錢, 從 0~N
-                                        // 第二個 row 存切點, 從 0~N
-    result[0][0] = 0;
-    result[0][1] = price[1];
-    result[1][0] = 0;
-    result[1][1] = 1;
-
-    for (int i = 2; i < n + 1; i ++){
-        int maxprice = INT_MIN;
-        int temp;
-        for (int j = 1; j <= i; j ++){
-            temp = maxprice;
-            maxprice = max(maxprice, price.at(j) + result.at(0).at(i-j));
-            if (maxprice != temp){
-                result.at(1).at(i) = j;
-            }
-        }
-        result.at(0).at(i) = maxprice;
+int** rodcut(int* arr, int N){
+    int maxprice, rodlen, temp;
+    int** result = new int* [N];
+    for (int i = 0; i < N; i ++){
+        result[i] = new int [N];
     }
-
-    result[0].erase(result[0].begin());
-    result[1].erase(result[1].begin());
-
+    for (int i = 0; i < N; i ++){
+        result[1][i] = i+1;
+    }
+    result[0][0] = arr[0];
+    for (int i = 1; i < N; i ++){
+        maxprice = arr[i];
+        for (int j = 1; j <= floor((i+1) / 2); j ++){
+            temp = maxprice;
+            maxprice = max(maxprice, arr[j-1] + arr[i-j]);
+            if (temp != maxprice){result[1][i] = j;}
+        }
+        result[0][i] = maxprice;
+    }
     return result;
-
 }
 
