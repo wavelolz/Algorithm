@@ -1,79 +1,59 @@
 #include <iostream>
-#include <climits>
+#define MAX 999
 using namespace std;
 
-void dijkstra(int** graph, int V, int E, int S);
-int ex_min(int* key, int* sss, int V);
-int check_edge(int** graph, int E, int from, int to);
+void dijkstra(int** graph, int N, int E, int S);
+int exmin(int* sss, int* key, int N);
 int main(){
-    int V, E, S;
-    cin >> V >> E;
-    int** graph;
-    graph = new int* [E];
+    int N, E, S;
+    cin >> N >> E;
+    int** graph = new int* [E];
     for (int i = 0; i < E; i ++){
         graph[i] = new int [3];
     }
     for (int i = 0; i < E; i ++){
-        for (int j = 0; j < 3; j ++){
-            cin >> graph[i][j];
-        }
+        cin >> graph[i][0] >> graph[i][1] >> graph[i][2];
     }
     cin >> S;
-    dijkstra(graph, V, E, S);
-    return 0;
+    dijkstra(graph, N, E, S);
 }
 
-int ex_min(int* key, int* sss, int V){
-    int min_val = INT_MAX;
+void dijkstra(int** graph, int N, int E, int S){
+    int from;
+    int sss[N], key[N], parent[N];
+    for (int i = 0; i < N; i ++){
+        sss[i] = 0;
+        key[i] = MAX;
+    }
+    key[S-1] = 0;
+    parent[S-1] = 0;
+    for (int i = 0; i < N; i ++){
+        from = exmin(sss, key, N);
+        sss[from] = 1;
+        for (int i = 0; i < E; i ++){
+            if (graph[i][0]-1 == from && key[graph[i][1]-1] > key[graph[i][0]-1] + graph[i][2] && sss[graph[i][1]-1] == 0){
+                key[graph[i][1]-1] = key[graph[i][0]-1] + graph[i][2];
+                parent[graph[i][1]-1] = from+1;
+            }
+        }
+    }
+    for (int i = 0; i < N; i ++){
+        cout << key[i] << " ";
+    }
+    cout << endl;
+    for (int i = 0; i < N; i ++){
+        cout << parent[i] << " ";
+    }
+}
+
+int exmin(int* sss, int* key, int N){
+    int min_val = MAX;
     int min_inx;
-    for (int i = 0; i < V; i ++){
+    for (int i = 0; i < N; i ++){
         if (key[i] < min_val && sss[i] == 0){
             min_val = key[i];
             min_inx = i;
         }
     }
     return min_inx;
-}
-
-int check_edge(int** graph, int E, int from, int to){
-    for (int i = 0; i < E; i ++){
-        if (graph[i][0] == from && graph[i][1] == to){
-            return graph[i][2];
-        }
-    }
-    return -1;
-
-
-}
-void dijkstra(int** graph, int V, int E, int S){
-    int key[V], parent[V], sss[V];
-    int from, w, total_weight = 0;
-
-    for (int i = 0; i < V; i ++){
-        key[i] = INT_MAX;
-        sss[i] = 0;
-    }
-
-    key[S-1] = 0;
-    parent[S-1] = 0;
-
-    for (int i = 0; i < V; i ++){
-        from = ex_min(key, sss, V);
-        sss[from] = 1;
-        for (int j = 0; j < V; j ++){
-            w = check_edge(graph, E, from+1, j+1);
-            if (sss[j] == 0 && w != -1 && key[j] > key[from] + w){
-                key[j] = key[from] + w;
-                parent[j] = from+1;
-            }
-        }
-    }
-
-    for (int i = 0; i < V; i ++){
-        cout << key[i] << " ";
-    }
-    cout << endl;
-    for (int i = 0; i < V; i ++){
-        cout << parent[i] << " ";
-    }
 }
