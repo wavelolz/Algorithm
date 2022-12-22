@@ -1,95 +1,67 @@
-#include <stdio.h>
-#include <climits>
-#include <bits/stdc++.h>
-#include <utility>
-#include <vector>
-#define MAX 999999
+#include <iostream>
 using namespace std;
+#define MAX 999
 
-
-
-void prim(int** graph, int V, int E, int S);
-bool sortbysec(pair<int, int> a, pair<int, int> b){return a.second <= b.second;}
-int ex_min(int* key, int* mst, int V);
-int find_edge(int** graph, int v1, int v2, int E);
+int exmin(int* key, int* mst, int N);
+int check_edge(int* edge, int* mst, int from);
+void prim(int** graph, int N, int E, int S);
 int main(){
-    int V, E, S;
-    cin >> V >> E;
+    int N, E, S;
+    cin >> N >> E;
     int** graph;
     graph = new int* [E];
     for (int i = 0; i < E; i ++){
         graph[i] = new int [3];
     }
     for (int i = 0; i < E; i ++){
-        for (int j = 0; j < 3; j ++){
-            cin >> graph[i][j];
-        }
+        cin >> graph[i][0] >> graph[i][1] >> graph[i][2];
     }
     cin >> S;
-
-    prim(graph, V, E, S);
-    return 0;
+    prim(graph, N, E, S);
 }
 
-int ex_min(int* key, int* mst, int V){
-    int min_val = INT_MAX, min_inx;
-    for (int i = 0; i < V; i ++){
-        if (mst[i] == 0 && key[i] < min_val){
-            min_val = key[i];
+int exmin(int* key, int* mst, int N){
+    int min_inx, min_val = MAX;
+    for (int i = 0; i < N; i ++){
+        if (key[i] < min_val && mst[i] == 0){
             min_inx = i;
+            min_val = key[i];
         }
     }
     return min_inx;
 }
 
-int find_edge(int** graph, int v1, int v2, int E){
-    int vpair[2];
-    if (v1 < v2){
-        vpair[0] = v1;
-        vpair[1] = v2;
-    } else {
-        vpair[0] = v2;
-        vpair[1] = v1;
-    }
-
-    for (int i = 0; i < E; i ++){
-        if (graph[i][0] == vpair[0] && graph[i][1] == vpair[1]){
-            return graph[i][2];
-        }
-    }
-
+int check_edge(int* edge, int* mst, int from){
+    if (edge[0] == from+1 && mst[edge[1]-1] == 0) return edge[1]-1;
+    if (edge[1] == from+1 && mst[edge[0]-1] == 0) return edge[0]-1;
     return -1;
 }
-void prim(int** graph, int V, int E, int S){
-    int key[V], parent[V], mst[V];
-    int next, w, total_weight = 0;
 
-    for (int i = 0; i < V; i ++){
-        key[i] = INT_MAX; // 把 key 的值 initialize 成無限大
-        mst[i] = 0;       // 還沒有 vertex 被找到
+void prim(int** graph, int N, int E, int S){
+    int from, to, total_weight = 0;
+    int mst[N], parent[N], key[N];
+    for (int i = 0; i < N; i ++){
+        mst[i] = 0;
+        key[i] = MAX;
     }
-    key[0] = 0;
-    parent[0] = 0;
-
-
-    for (int i = 0; i < V; i ++){
-        next = ex_min(key, mst, V); // 從還沒被找過的 set 裡找出 key 最小的 vertex
-        mst[next] = 1;              // 被找到了
-        for (int j = 0; j < V; j ++){ // update 新找到的點的 adjacency vertex
-            w = find_edge(graph, next+1, j+1, E);  // 確認兩點之間是否有 path
-            if (w != -1 && w < key[j] && mst[j] == 0){
-                key[j] = w;
-                parent[j] = next;
+    key[S-1] = 0;
+    parent[S-1] = 0;
+    for (int i = 0; i < N; i ++){
+        from = exmin(key, mst, N);
+        mst[from] = 1;
+        for (int i = 0; i < E; i ++){
+            to = check_edge(graph[i], mst, from);
+            if (to != -1 && graph[i][2] < key[to]){
+                key[to] = graph[i][2];
+                parent[to] = from+1;
             }
         }
     }
-    for (int i = 1; i < V; i ++){
-        total_weight += find_edge(graph, i+1, parent[i]+1, E);
+    for (int i = 0; i < N; i ++){
+        total_weight += key[i];
     }
-
-    cout << parent[0] << " ";
-    for (int i = 1; i < V; i ++){
-        cout << parent[i]+1 << " ";
+    for (int i = 0; i < N; i ++){
+        cout << parent[i] << " ";
     }
     cout << endl;
     cout << total_weight;
