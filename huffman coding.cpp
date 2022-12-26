@@ -12,7 +12,7 @@ public:
     Node* right = NULL;
 };
 
-Node* create_node(int freq);
+Node* create_node(int freq, Node* left, Node* right);
 vector<Node*> huffman(vector<Node*> val);
 bool sortbyfreq(Node* a, Node* b){return (a->freq <= b->freq);}
 void encode(Node* tree, string str);
