@@ -1,10 +1,11 @@
 #include <iostream>
-#include <climits>
+#define MAX 999
 using namespace std;
-void bellmanford(int** graph, int V, int E, int S);
+
+int bellmanford(int** graph, int N, int E, int S);
 int main(){
-    int V, E, S;
-    cin >> V >> E;
+    int N, E, S;
+    cin >> N >> E;
     int** graph;
     graph = new int* [E];
     for (int i = 0; i < E; i ++){
@@ -14,54 +15,35 @@ int main(){
         cin >> graph[i][0] >> graph[i][1] >> graph[i][2];
     }
     cin >> S;
-    bellmanford(graph, V, E, S);
-
+    bellmanford(graph, N, E, S);
 }
-void bellmanford(int** graph, int V, int E, int S){
-    int key[V], parent[V], dtneg[V];
-    int from, to, isneg = 0;
-    for (int i = 0; i < V; i ++){
-        key[i] = INT_MAX;
+
+int bellmanford(int** graph, int N, int E, int S){
+    int key[N], parent[N];
+    for (int i = 0; i < N; i ++){
+        key[i] = MAX;
     }
     key[S-1] = 0;
     parent[S-1] = 0;
-    for (int i = 0; i < V-1; i ++){
-        for (int j = 0; j < E; j ++){
-            from = graph[j][0];
-            to = graph[j][1];
-            if (key[to-1] > key[from-1] + graph[j][2]){
-                key[to-1] = key[from-1] + graph[j][2];
-                parent[to-1] = from;
+    for (int i = 0; i < N-1; i ++){
+        for (int i = 0; i < E; i ++){
+            if (key[graph[i][1]-1] > key[graph[i][0]-1] + graph[i][2]){
+                key[graph[i][1]-1] = key[graph[i][0]-1] + graph[i][2];
+                parent[graph[i][1]-1] = graph[i][0];
             }
         }
     }
-    for (int i = 0; i < V; i ++){
-        dtneg[i] = key[i];
-    }
-
     for (int i = 0; i < E; i ++){
-        from = graph[i][0];
-        to = graph[i][1];
-        if (dtneg[to-1] > dtneg[from-1] + graph[i][2]){
-            dtneg[to-1] = dtneg[from-1] + graph[i][2];
+        if (key[graph[i][1]-1] > key[graph[i][0]-1] + graph[i][2]){
+            cout << "There is a negative weight cycle in the graph";
+            return 0;
         }
     }
-    for (int i = 0; i < V; i ++){
-        if (dtneg[i] != key[i]){
-            isneg = 1;
-            break;
-        }
-    }
-
-    if (isneg){
-        cout << "There is a negative weight cycle in the graph";
-    } else {
-        for (int i = 0; i < V; i ++){
+    for (int i = 0; i < N; i ++){
         cout << key[i] << " ";
-        }
-        cout << endl;
-        for (int i = 0; i < V; i ++){
-            cout << parent[i] << " ";
-        }
+    }
+    cout << endl;
+    for (int i = 0; i < N; i ++){
+        cout << parent[i] << " ";
     }
 }
